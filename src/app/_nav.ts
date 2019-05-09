@@ -33,6 +33,40 @@ export const navItems: NavData[] = [
   {
     name: 'Dashboard',
     url: '/dashboard',
+    icon: 'icon-speedometer'
+  },
+  {
+    title: true,
+    name: 'Configuración'
+  },
+  {
+    name: 'Administración',
+    url: '/administration',
+    icon: 'icon-settings',
+    children: [
+      {
+        name: 'Clientes',
+        url: '/administration/clients',
+        icon: 'icon-people'
+      },
+      {
+        name: 'Prodcutos',
+        url: '/administration/products',
+        icon: 'icon-social-dropbox'
+      },
+      {
+        name: 'Usuarios',
+        url: '/administration/users',
+        icon: 'icon-people'
+      }
+    ]
+  }
+];
+
+export const navItemss: NavData[] = [
+  {
+    name: 'Dashboard',
+    url: '/dashboard',
     icon: 'icon-speedometer',
     badge: {
       variant: 'info',

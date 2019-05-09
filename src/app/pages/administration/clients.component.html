@@ -1,0 +1,144 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-users"></i> Clientes registrados (<small>{{ clients.length }}</small> )
+          <div class="card-header-actions">
+              <button (click)="newClient()" class="btn btn-ghost-success" type="button"><i class="fa fa-plus"></i> Nuevo</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" *ngIf="loading">
+            <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
+          </div>
+          <div class="alert alert-danger" *ngIf="!loading && clients.length === 0">
+            <i class="fa fa-info-circle "></i><strong>No hay datos</strong>
+          </div>
+          <table class="table table-striped" *ngIf="!loading && clients.length > 0">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Nombre Comercial</th>
+                <th>Teléfono</th>
+                <th>Ciudad</th>
+                <th>Mora</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let client of clients">
+                <td>
+                  <img [src]="client.image" alt="user" class="img-circle" width="20" height="20" />
+                </td>
+                <td> <small> {{ client.name }} </small> </td>
+                <td> <small> {{ client.lastname }} </small> </td>
+                <td> <small> {{ client.phone }} </small> </td>
+                <td> <small> {{ client.city }} </small> </td>
+                <td> <small> {{ client.should ? 'SI' : 'NO'}} </small> </td>
+                <td class="text-nowrap">
+                    <div class="tools modify-tools pointer">
+                        <a class="pointer" (click)="editClient(client)"><i
+                                class="fa  fa-edit" style="color:#4caf50"></i></a>
+                        <a class="pointer" (click)="updateClient(client)"><i
+                                class="fa fa-check-circle-o" style="color:#4caf50"></i></a>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dark-background animated fadeInDown" [ngClass]="oculto">
+
+  <div aria-hidden="false" aria-labelledby="myModalLabel" bsmodal="" class="modal fade in show" role="dialog" aria-modal="true" style="display: block;">
+
+    <div class="modal-dialog modal-success modal-lg" role="document">
+      <form ngNativeValidate #f="ngForm" (ngSubmit)="actionForm( f )">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"> {{ titleModal }} </h4>
+            <button (click)="closeModal()" aria-label="Close" class="close" type="button"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+              </div>
+              <div class="col-md-4">
+                  <div class="form-group is-empty">
+                      <label class="control-label mb-10">Nombre Completo</label>
+                      <input type="hidden" [ngModel]="objClient.id" name="id">
+                      <input type="text" [ngModel]="objClient.name" name="name" required
+                          class="form-control">
+                  </div>
+                  <div class="form-group is-empty">
+                      <label class="control-label mb-10">Nombre Comercial</label>
+                      <input type="text" [ngModel]="objClient.lastname" name="lastname" required
+                          class="form-control">
+                  </div>
+                  <div class="form-group is-empty">
+                      <label class="control-label mb-10">Ruc</label>
+                      <input type="text" [ngModel]="objClient.ruc" name="ruc" required
+                          class="form-control">
+                  </div>
+                  <div class="form-group is-empty">
+                      <label class="control-label mb-10">Teléfono</label>
+                      <input type="text" [ngModel]="objClient.phone" name="phone" required
+                          class="form-control">
+                  </div>
+                  <div class="form-group is-empty">
+                      <label class="control-label mb-10">Vendedor</label>
+                      <select [(ngModel)]="objClient.seller" name="seller" class="form-control input-sm">
+                          <option value="">Seleccione un Vendedor</option>
+                          <option *ngFor="let user of usernames" [value]="user.uid">
+                              {{ user.name }}
+                          </option>
+                      </select>
+                  </div>
+                  <div class="form-group is-empty">
+                      <div class="checkbox">
+                          <label>
+                              <input type="checkbox" [(ngModel)]="objClient.should" name="should"><span
+                                  class="checkbox-material"></span> Tiene facturas pendiente de pago?
+                          </label>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Ciudad</label>
+                  <input type="text" [ngModel]="objClient.city" name="city" required class="form-control">
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Dirección</label>
+                  <input type="text" [ngModel]="objClient.address" name="address" required class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" (click)="closeModal()"><i class="fa fa-close "></i> Cancelar</button>
+            <button class="pull-right btn btn-outline-success"><i class="fa fa-save "></i> Guardar</button>
+          </div>
+        </div>
+    </form>
+    </div>
+
+  </div>
+
+</div>

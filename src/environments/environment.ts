@@ -4,5 +4,21 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseConfig: {
+    apiKey: 'AIzaSyARNWC-h20iHtUaOL_9D7BGNHGwvx4fY1s',
+    authDomain: 'orden-pedidos.firebaseapp.com',
+    databaseURL: 'https://orden-pedidos.firebaseio.com',
+    projectId: 'orden-pedidos',
+    storageBucket: 'orden-pedidos.appspot.com',
+    messagingSenderId: '544672712834'
+  }
+  /*firebaseConfig: {
+    apiKey: 'AIzaSyARNWC-h20iHtUaOL_9D7BGNHGwvx4fY1s',
+    authDomain: 'orden-compras.firebaseapp.com',
+    databaseURL: 'https://orden-compras.firebaseio.com',
+    projectId: 'orden-compras',
+    storageBucket: 'orden-compras.appspot.com',
+    messagingSenderId: '544672712834'
+  }*/
 };

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
+import Swal from 'sweetalert2';
+
 @Component({
   // tslint:disable-next-line
   selector: 'body',
@@ -15,6 +17,14 @@ export class AppComponent implements OnInit {
         return;
       }
       window.scrollTo(0, 0);
+    });
+  }
+
+  msj() {
+    Swal.fire({
+      title: 'Hello!',
+      text: 'Hello',
+      type: 'success'
     });
   }
 }

@@ -6,7 +6,7 @@ import { DefaultLayoutComponent } from './containers';
 
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './views/login/login.component';
+import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './views/register/register.component';
 
 export const routes: Routes = [
@@ -50,6 +50,10 @@ export const routes: Routes = [
       title: 'Home'
     },
     children: [
+      {
+        path: 'administration',
+        loadChildren: './pages/administration/administration.module#AdministrationModule'
+      },
       {
         path: 'base',
         loadChildren: './views/base/base.module#BaseModule'

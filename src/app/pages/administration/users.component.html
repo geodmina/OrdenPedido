@@ -1,0 +1,100 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-users"></i> Usuarios registrados (<small>{{ usernames.length }}</small> )
+          <div class="card-header-actions">
+              <button (click)="newUsername()" class="btn btn-ghost-success" type="button"><i class="fa fa-plus"></i> Nuevo</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" *ngIf="loading">
+            <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
+          </div>
+          <div class="alert alert-danger" *ngIf="!loading && usernames.length === 0">
+            <i class="fa fa-info-circle "></i><strong>No hay datos</strong>
+          </div>
+          <table class="table table-striped" *ngIf="!loading && usernames.length > 0">
+            <thead>
+              <tr>
+                <th>Uid</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let username of usernames">
+                <td> <small> {{ username.uid }} </small> </td>
+                <td> <small> {{ username.name }} </small> </td>
+                <td> <small> {{ username.email }} </small> </td>
+                <td> <small> {{ username.role }} </small> </td>
+                <td class="text-nowrap">
+                    <div class="tools modify-tools pointer">
+                      <a class="pointer" (click)="editUsername(username)"><i class="fa  fa-edit" style="color:#4caf50"></i></a>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dark-background animated fadeInDown" [ngClass]="oculto">
+  <div aria-hidden="false" aria-labelledby="myModalLabel" bsmodal="" class="modal fade in show" role="dialog" aria-modal="true" style="display: block;">
+      <div class="modal-dialog modal-success" role="document">
+          <form ngNativeValidate #f="ngForm" (ngSubmit)="actionForm( f )">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"> {{ titleModal }} </h4>
+                  <button (click)="closeModal()" aria-label="Close" class="close" type="button"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-md-12">
+                    <div class="form-group is-empty">
+                      <label class="control-label mb-10">Nombre Completo</label>
+                      <input type="hidden" [ngModel]="objUsername.uid" name="uid">
+                      <input type="text" [ngModel]="objUsername.name" name="name" required class="form-control">
+                    </div>
+                    <div class="form-group is-empty">
+                      <label class="control-label mb-10">Correo Electrónico</label>
+                      <input type="email" [ngModel]="objUsername.email" [readonly]="action === 'edit'" name="email" required class="form-control">
+                    </div>
+                    <div class="form-group is-empty">
+                      <label class="control-label mb-10">Contraseña</label>
+                      <input type="text" ngModel name="password" [required]="action === 'new'" [disabled]="action === 'edit'" class="form-control">
+                    </div>
+                    <div class="form-group is-empty">
+                      <label class="control-label mb-10">Rol</label>
+                      <select [(ngModel)]="objUsername.role" name="role" class="form-control input-sm" required>
+                        <option value="">Seleccione un rol</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="VENDEDOR">VENDEDOR</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" (click)="closeModal()"><i class="fa fa-close "></i> Cancelar</button>
+                  <button class="pull-right btn btn-outline-success"><i class="fa fa-save "></i> Guardar</button>
+                </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
