@@ -10,5 +10,8 @@ export class Product {
     price?: number;
     offer?: boolean;
     priceOffer?: number;
+    status?: boolean;
+    registro?: string;
+    productId?: number;
 
 }

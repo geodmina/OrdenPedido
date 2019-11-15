@@ -1,0 +1,96 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-align-justify"></i> Reporte de Metas
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" *ngIf="loading">
+            <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
+          </div>
+          <div class="alert alert-danger" *ngIf="!loading && reporte.length === 0">
+            <i class="fa fa-info-circle "></i><strong>No hay datos</strong>
+          </div>
+
+          <div class="row">
+
+            <div class="col-sm-6">
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="row">
+                    <div class="col-md-2">
+                      Año:
+                    </div>
+                    <div class="col-md-4">
+                      <select [(ngModel)]="anio" name="anio" class="form-control input-sm">
+                        <option value="0">Seleccione un Año</option>
+                        <option *ngFor="let anio of anios" [value]="anio">
+                          {{ anio }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-md-1">
+                      Mes :
+                    </div>
+                    <div class="col-md-4">
+                        <select [(ngModel)]="mes" name="mes" class="form-control input-sm">
+                            <option value="">Seleccione un Mes</option>
+                            <option *ngFor="let mes of meses" [value]="mes">
+                              {{ mes }}
+                            </option>
+                          </select>
+                    </div>
+                    <div class="col-md-1">
+                      <button (click)="consultar()" class="pull-right btn btn-outline-success"><i
+                          class="fa fa-search "></i></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="table table-responsive-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>Vendedor</th>
+                        <th>Total Facturado</th>
+                        <th>Total Meta</th>
+                        <th>% Facturado/Meta</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of reporte; let i = index">
+                        <td> {{ item.vendedor }}</td>
+                        <td class="center">{{ item.totalFacturado | currency }}</td>
+                        <td class="center">{{ item.meta | currency }}</td>
+                        <td class="center">{{ item.porcentaje | percent }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm-6">
+
+                <div class="card">
+                    <div class="card-header">
+                      <i class="fa fa-pie-chart"></i> Gráfico
+                    </div>
+                    <div class="card-body" *ngIf="!loading">
+                      <div class="chart-wrapper">
+                        <canvas baseChart class="chart" [datasets]="barChartData" [labels]="barChartLabels"
+                          [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType"></canvas>
+                      </div>
+                    </div>
+                  </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,10 +5,24 @@
         <div class="card-header">
           <i class="fa fa-dropbox"></i> Produtos registrados ( <small>{{ products.length }}</small> )
           <div class="card-header-actions">
-              <button (click)="newProduct()" class="btn btn-ghost-success" type="button"><i class="fa fa-plus"></i> Nuevo</button>
+            <button (click)="newProduct()" class="btn btn-ghost-success" type="button"><i class="fa fa-plus"></i>
+              Nuevo</button>
           </div>
         </div>
         <div class="card-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fa fa-search"></i>
+                  </span>
+                </div>
+                <input class="form-control" type="text" name="search" placeholder="Busqueda de producto" (input)="onSearchChange($event.target.value)">
+              </div>
+              <br>
+            </div>
+          </div>
           <div class="alert alert-info" *ngIf="loading">
             <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
           </div>
@@ -19,6 +33,7 @@
             <thead>
               <tr>
                 <th>Imagen</th>
+                <th>Código</th>
                 <th>Producto</th>
                 <th>Tipo</th>
                 <th>Stock</th>
@@ -28,20 +43,25 @@
             </thead>
             <tbody>
               <tr *ngFor="let product of products">
-                <td> <img [src]="product.image" [alt]="product.name" class="img-circle" width="25" height="25" /> </td>
+                <td *ngIf="product.image != 'not_image'"> <img [src]="product.image" [alt]="product.name"
+                    class="img-circle" width="25" height="25" /> </td>
+                <td *ngIf="product.image === 'not_image'"> <img src="/assets/img/no_image.png" [alt]="product.name"
+                    class="img-circle" width="25" height="25" /> </td>
+                <td> <small> {{ product.id }} </small> </td>
                 <td> <small> {{ product.name }} </small> </td>
                 <td> <small> {{ product.type === '0' ? 'LLANTA' : 'REPUESTO'}} </small> </td>
                 <td> <small> {{ product.stock }} </small> </td>
                 <td> <small> {{ product.price | number : '1.2-2' }} </small> </td>
                 <td class="text-nowrap">
-                    <div class="tools modify-tools">
-                        <!--<a class="pointer" [routerLink]="[driver._id]" *ngIf="_adminloginService.admin.role === 'ADMIN_ROLE'"><i class="fa fa-edit"></i></a>
+                  <div class="tools modify-tools">
+                    <!--<a class="pointer" [routerLink]="[driver._id]" *ngIf="_adminloginService.admin.role === 'ADMIN_ROLE'"><i class="fa fa-edit"></i></a>
                         <a class="pointer" (click)="deleteDriver(driver)" *ngIf="_adminloginService.admin.role === 'ADMIN_ROLE'"><i class="fa fa-trash-o"></i></a>
                         <a class="pointer" (click)="suspendDriver(driver)" *ngIf="driver.status.name === 'EN LINEA' || driver.status.name === 'DESCONECTADO' || driver.status.name === 'OCUPADO' "><i class="fa  fa-times-circle-o" style="color:#f44336"></i></a>
                         <a class="pointer" (click)="activeDriver(driver)" *ngIf="driver.status.name === 'SUSPENDIDO'"><i class="fa fa-check-circle-o" style="color:#4caf50"></i></a>
                         <a class="pointer" (click)="updateClient(client)"><i class="fa fa-check-circle-o" style="color:#4caf50"></i></a>-->
-                        <a class="pointer" (click)="editProduct(product)"><i class="fa  fa-edit" style="color:#4caf50"></i></a>
-                    </div>
+                    <a class="pointer" (click)="editProduct(product)"><i class="fa  fa-edit"
+                        style="color:#4caf50"></i></a>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -64,76 +84,120 @@
 
 <div class="dark-background animated fadeInDown" [ngClass]="oculto">
 
-    <div aria-hidden="false" aria-labelledby="myModalLabel" bsmodal="" class="modal fade in show" role="dialog" aria-modal="true" style="display: block;">
-  
-      <div class="modal-dialog modal-success modal-lg" role="document">
-        <form ngNativeValidate #f="ngForm" (ngSubmit)="actionForm( f )">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title"> {{ titleModal }} </h4>
-              <button (click)="closeModal()" aria-label="Close" class="close" type="button"><span aria-hidden="true">×</span></button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-4">
-                  <img *ngIf="!imageTemp && action === 'edit'" [src]="objProduct.image" [alt]="objProduct.name" width="75%" height="75%" />
-                  <img *ngIf="imageTemp" [src]="imageTemp" width="75%" height="75%" />
-                  <input class="form-control-file" (change)="selectImage($event.target.files[0])" type="file">
+  <div aria-hidden="false" aria-labelledby="myModalLabel" bsmodal="" class="modal fade in show" role="dialog"
+    aria-modal="true" style="display: block;">
+
+    <div class="modal-dialog modal-success modal-lg" role="document">
+      <form ngNativeValidate #f="ngForm" (ngSubmit)="actionForm( f )">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"> {{ titleModal }} </h4>
+            <button (click)="closeModal()" aria-label="Close" class="close" type="button"><span
+                aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <img *ngIf="!imageTemp && action === 'edit' && objProduct.image === 'not_image'"
+                  src="/assets/img/no_image.png" [alt]="objProduct.name" width="100%" height="100%" />
+                <img *ngIf="!imageTemp && action === 'edit' && objProduct.image != 'not_image'" [src]="objProduct.image"
+                  [alt]="objProduct.name" width="100%" height="100%" />
+                <img *ngIf="imageTemp" [src]="imageTemp" width="100%" height="100%" />
+                <input class="form-control-file" (change)="selectImage($event.target.files[0])" type="file"
+                  [disabled]="!edit && action === 'edit'">
+              </div>
+              <div class="col-md-4">
+                <input type="hidden" [ngModel]="objProduct.id" name="id">
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Nombre</label>
+                  <input type="text" [ngModel]="objProduct.name" name="name" required class="form-control"
+                    [disabled]="action === 'edit'">
                 </div>
-                <div class="col-md-4">
-                  <input type="hidden" [ngModel]="objProduct.id" name="id">
-                  <div class="form-group is-empty">
-                      <label class="control-label mb-10">Nombre</label>
-                      <input type="text" [ngModel]="objProduct.name" name="name" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                      <label class="control-label mb-10">Marca</label>
-                      <input type="text" [ngModel]="objProduct.brand" name="brand" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                      <label class="control-label mb-10">Modelo</label>
-                      <input type="text" [ngModel]="objProduct.model" name="model" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                      <label class="control-label mb-10">Tipo</label>
-                      <select [(ngModel)]="objProduct.type" name="type" class="form-control input-sm">
-                        <option value="">Seleccione un tipo de producto</option>
-                        <option value="0">Llantas</option>
-                        <option value="1">Repuestos</option>
-                      </select>
-                  </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Marca</label>
+                  <input type="text" [ngModel]="objProduct.brand" name="brand" required class="form-control"
+                    [disabled]="action === 'edit'">
                 </div>
-                <div class="col-md-4">
-                  <div class="form-group is-empty">
-                    <label class="control-label mb-10">Stock</label>
-                    <input type="text" [ngModel]="objProduct.stock" name="stock" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                    <label class="control-label mb-10">Precio</label>
-                    <input type="text" [ngModel]="objProduct.price" name="price" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                    <label class="control-label mb-10">Precio Oferta</label>
-                    <input type="text" [ngModel]="objProduct.priceOffer" name="priceOffer" required class="form-control">
-                  </div>
-                  <div class="form-group is-empty">
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" [ngModel]="objProduct.offer" name="offer"> Producto en oferta?
-                      </label>
-                    </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Modelo</label>
+                  <input type="text" [ngModel]="objProduct.model" name="model" class="form-control"
+                    [disabled]="action === 'edit'">
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Tipo</label>
+                  <select [(ngModel)]="objProduct.type" name="type" class="form-control input-sm"
+                    [disabled]="!edit && action === 'edit'">
+                    <option value="">Seleccione un tipo de producto</option>
+                    <option value="0">Llantas</option>
+                    <option value="1">Repuestos</option>
+                  </select>
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Estado</label>
+                  <select [(ngModel)]="objProduct.status" name="status" class="form-control input-sm"
+                    [disabled]="!edit && action === 'edit'">
+                    <option value="">Seleccione un estado</option>
+                    <option value="true">ACTIVO</option>
+                    <option value="false">INACTIVO</option>
+                  </select>
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Estado</label>
+                  <select [(ngModel)]="objProduct.registro" name="registro" class="form-control input-sm"
+                    [disabled]="!edit && action === 'edit'">
+                    <option value="">Seleccione un estado</option>
+                    <option value="NUEVO">NUEVO</option>
+                    <option value="NORMAL">NORMAL</option>
+                    <option value="DISCONTINUADO">DISCONTINUADO</option>
+                    <option value="OBSOLETO">OBSOLETO</option>
+                    <option value="AGOTADO">AGOTADO</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Codigo</label>
+                  <input [disabled]="action === 'edit'" type="text" [ngModel]="objProduct.id"
+                    name="id" required class="form-control">
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Stock</label>
+                  <input [disabled]="action === 'edit'" type="text" [ngModel]="objProduct.stock"
+                    name="stock" required class="form-control">
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Precio</label>
+                  <input [disabled]="!edit && action === 'edit'" type="text" [ngModel]="objProduct.price" name="price"
+                    required class="form-control">
+                </div>
+                <div class="form-group is-empty">
+                  <label class="control-label mb-10">Precio Oferta</label>
+                  <input [disabled]="!edit && action === 'edit'" type="text" [ngModel]="objProduct.priceOffer"
+                    name="priceOffer" required class="form-control">
+                </div>
+                <div class="form-group is-empty">
+                  <div class="checkbox">
+                    <label>
+                      <input [disabled]="!edit && action === 'edit'" type="checkbox" [ngModel]="objProduct.offer"
+                        name="offer"> Producto en oferta?
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger" (click)="closeModal()"> <i class="fa fa-close "></i> Cancelar</button>
-              <button class="pull-right btn btn-outline-success"> <i class="fa fa-save "></i> Guardar </button>
-            </div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" (click)="closeModal()"> <i class="fa fa-close "></i>
+              Cancelar</button>
+            <button *ngIf="!edit && action === 'edit'" (click)="editForm()"
+              class="pull-right btn btn-outline-success"><i class="fa fa-edit "></i> Editar</button>
+            <button *ngIf="edit || action === 'new'" class="pull-right btn btn-outline-success"><i
+                class="fa fa-save "></i> Guardar</button>
+          </div>
+        </div>
       </form>
-      </div>
-  
     </div>
-  
+
   </div>
+
+</div>

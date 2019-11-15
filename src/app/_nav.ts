@@ -50,14 +50,81 @@ export const navItems: NavData[] = [
         icon: 'icon-people'
       },
       {
-        name: 'Prodcutos',
+        name: 'Productos',
         url: '/administration/products',
         icon: 'icon-social-dropbox'
       },
       {
-        name: 'Usuarios',
+        name: 'Vendedores',
         url: '/administration/users',
         icon: 'icon-people'
+      },
+      {
+        name: 'Metas por Vendedor',
+        url: '/administration/metas',
+        icon: 'icon-chart'
+      },
+      {
+        name: 'Carga de Invenntario',
+        url: '/administration/carga',
+        icon: 'icon-settings'
+      }
+    ]
+  },
+  {
+    title: true,
+    name: 'Pedidos'
+  },
+  {
+    name: 'Ordenes de Pedido',
+    url: '/ordenes',
+    icon: 'icon-folder-alt',
+    children: [
+      {
+        name: 'Ordenes de Pedido',
+        url: '/ordenes/orden',
+        icon: 'icon-book-open'
+      },
+      {
+        name: 'Facturas',
+        url: '/ordenes/facturas',
+        icon: 'icon-book-open'
+      },
+      {
+        name: 'Guías de Remisión',
+        url: '/ordenes/guias',
+        icon: 'icon-book-open'
+      }
+    ]
+  },
+  {
+    title: true,
+    name: 'Reportes'
+  },
+  {
+    name: 'Reportes',
+    url: '/reportes',
+    icon: 'icon-folder-alt',
+    children: [
+      {
+        name: 'Reporte Ventas',
+        url: '/reportes/ventas',
+        icon: 'icon-book-open'
+      },
+      {
+        name: 'Reporte Productos',
+        url: '/reportes/productos',
+        icon: 'icon-book-open'
+      },
+      {
+        name: 'Reporte Facturación',
+        url: '/reportes/conciliado',
+        icon: 'icon-book-open'
+      },
+      {
+        name: 'Reporte de Metas',
+        url: '/reportes/metas',
+        icon: 'icon-book-open'
       }
     ]
   }

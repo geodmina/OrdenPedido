@@ -13,7 +13,11 @@ export class ClientService {
     }
 
     getClients() {
-        return this.afs.collection('clients', ref => ref.orderBy('name', 'asc').limit(20)).snapshotChanges();
+        return this.afs.collection('clients', ref => ref.orderBy('name', 'asc')).snapshotChanges();
+    }
+
+    getCliente(uid: any) {
+        return this.afs.collection('clients').doc(uid).snapshotChanges();
     }
 
     addClient(client: Client) {
@@ -25,6 +29,19 @@ export class ClientService {
         const id = client.id;
         delete client.id;
         return this.afs.doc('clients/' + id).update(client);
+    }
+
+    getCities() {
+        return this.afs.collection('cities', ref => ref.orderBy('name', 'asc')).snapshotChanges();
+    }
+
+    updateDoc(uid: any) {
+        let doc = this.afs.collection('clients', ref => ref.where('code', '==', uid));
+        return doc.snapshotChanges();
+    }
+
+    restauraCupo(uid: any, cu: any) {
+        return this.afs.collection('clients').doc(uid).update({ cu: cu });
     }
 
 }

@@ -55,6 +55,14 @@ export const routes: Routes = [
         loadChildren: './pages/administration/administration.module#AdministrationModule'
       },
       {
+        path: 'ordenes',
+        loadChildren: './pages/ordenes/ordenes.module#OrdenesModule'
+      },
+      {
+        path: 'reportes',
+        loadChildren: './pages/reportes/reportes.module#ReportesModule'
+      },
+      {
         path: 'base',
         loadChildren: './views/base/base.module#BaseModule'
       },

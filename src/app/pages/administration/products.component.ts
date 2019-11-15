@@ -15,11 +15,14 @@ import Swal from 'sweetalert2';
 export class ProductsComponent implements OnInit {
 
   products: Product[] = [];
+  productsF: Product[] = [];
   oculto = 'oculto';
   objProduct: Product = new Product();
   action = '';
   titleModal = '';
   titleCancel = '';
+
+  edit = false;
 
   imageLoad: File;
   imageTemp: string;
@@ -33,6 +36,23 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+  }
+
+  onSearchChange(searchValue: string): void {
+    if ( searchValue.length > 3 ) {
+      this.products = this.productsF.filter(function(item) {
+        return item.brand.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ||
+        item.model.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ||
+        item.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ||
+        item.id.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ;
+      });
+    } else {
+      this.products = this.productsF;
+    }
+  }
+
+  editForm() {
+    this.edit = true;
   }
 
   selectImage( file: File ) {
@@ -58,7 +78,7 @@ export class ProductsComponent implements OnInit {
   getProducts() {
     this.productService.getProducts().subscribe(
       products => {
-        this.products = products.map(
+        this.productsF = products.map(
             e => {
                 return {
                     id: e.payload.doc.id,
@@ -66,6 +86,7 @@ export class ProductsComponent implements OnInit {
                 } as Product;
             }
         );
+        this.products = this.productsF;
         this.loading = false;
       }
     );
@@ -111,6 +132,7 @@ export class ProductsComponent implements OnInit {
             this.productService.addProduct(form.value)
               .then(
                 data => {
+                  this.edit = false;
                   this.oculto = 'oculto';
                   this.action = '';
                   this.swal('Registro guardado', 'Producto registrado de manera exitosa', 'success');
@@ -157,6 +179,7 @@ export class ProductsComponent implements OnInit {
               this.productService.updateProduct(form.value)
                 .then(
                   data => {
+                    this.edit = false;
                     this.oculto = 'oculto';
                     this.action = '';
                     this.swal('Registro modificado', 'Producto modificado de manera exitosa', 'success');
@@ -172,6 +195,7 @@ export class ProductsComponent implements OnInit {
       this.productService.updateProduct(form.value)
       .then(
         data => {
+          this.edit = false;
           this.oculto = 'oculto';
           this.action = '';
           this.swal('Registro modificado', 'Producto modificado de manera exitosa', 'success');
@@ -199,6 +223,7 @@ export class ProductsComponent implements OnInit {
           this.objProduct.offer = false;
           this.oculto = 'oculto';
           this.action = '';
+          this.edit = false;
       }
     });
   }

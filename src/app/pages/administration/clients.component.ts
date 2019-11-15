@@ -4,6 +4,9 @@ import { Username } from '../../models/username';
 import { ClientService, UserService } from '../../services/service.index';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { City } from '../../models/city';
+import { AngularFireStorage } from 'angularfire2/storage';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-clients',
@@ -11,7 +14,10 @@ import Swal from 'sweetalert2';
 })
 export class ClientsComponent implements OnInit {
   clients: Client[] = [];
+  clientsF: Client[] = [];
   usernames: Username[] = [];
+
+  edit = false;
 
   loading = true;
 
@@ -21,27 +27,58 @@ export class ClientsComponent implements OnInit {
   titleModal = '';
   titleCancel = '';
 
+  cities = [];
+
   imageLoad: File;
-  imageTemp = '/assets/img/customer_avatar.png';
+  imageTemp: string;
+
+  /*imageLoad: File;
+  imageTemp = '/assets/img/customer_avatar.png';*/
 
   constructor(
     private clientService: ClientService,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private _storage: AngularFireStorage
+  ) { }
 
   ngOnInit() {
     this.getClients();
     this.getUsers();
+    this.getCities();
+  }
+
+  onSearchChange(searchValue: string): void {
+    if ( searchValue.length > 3 ) {
+      this.clients = this.clientsF.filter(function(item) {
+        return item.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ||
+        item.lastname.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ||
+        item.ruc.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ;
+      });
+    } else {
+      this.clients = this.clientsF;
+    }
+  }
+
+  getCities() {
+    this.clientService.getCities().subscribe(clients => {
+      this.cities = clients.map(e => {
+        return {
+          id: e.payload.doc.id,
+          ...e.payload.doc.data()
+        } as City;
+      });
+    });
   }
 
   getClients() {
     this.clientService.getClients().subscribe(clients => {
-      this.clients = clients.map(e => {
+      this.clientsF = clients.map(e => {
         return {
           id: e.payload.doc.id,
           ...e.payload.doc.data()
         } as Client;
       });
+      this.clients = this.clientsF;
       this.loading = false;
     });
   }
@@ -84,6 +121,8 @@ export class ClientsComponent implements OnInit {
   newClient() {
     this.oculto = '';
     this.objClient = new Client();
+    this.objClient.cu = 0;
+    this.objClient.cm = 0;
     this.objClient.should = false;
     this.action = 'new';
     this.titleModal = 'Registro de cliente';
@@ -100,25 +139,49 @@ export class ClientsComponent implements OnInit {
   }
 
   createClient(form: NgForm) {
-    if (form.invalid) {
+    if (!this.imageLoad) {
+      this.swal('Error', 'Debe elegir una imagen para el cliente', 'error');
       return;
     }
-    this.clientService
-      .addClient(form.value)
-      .then(data => {
-        this.oculto = 'oculto';
-        this.action = '';
-        this.swal(
-          'Registro guardado',
-          'Cliente registrado de manera exitosa',
-          'success'
-        );
-        form.resetForm();
-        this.objClient = new Client();
-      })
-      .catch(error => {
-        this.swal('Error', 'Error al registrar cliente', 'error');
-      });
+    if (form.invalid) { return; }
+    // Generate a random ID
+    const randomId = Math.random().toString(36).substring(2);
+    console.log(randomId);
+    const filepath = `images/${randomId}`;
+    const fileRef = this._storage.ref(filepath);
+    // Upload image
+    const task = this._storage.upload(filepath, this.imageLoad);
+    return task.snapshotChanges()
+      .pipe(
+        finalize(
+          () => {
+            fileRef.getDownloadURL().subscribe(url => {
+              form.value.image = url;
+              this.clientService
+                .addClient(form.value)
+                .then(data => {
+                  this.oculto = 'oculto';
+                  this.action = '';
+                  this.swal(
+                    'Registro guardado',
+                    'Cliente registrado de manera exitosa',
+                    'success'
+                  );
+                  form.resetForm();
+                  this.objClient = new Client();
+                })
+                .catch(error => {
+                  this.swal('Error', 'Error al registrar cliente', 'error');
+                });
+            });
+          }
+        )
+      ).subscribe();
+
+  }
+
+  editForm() {
+    this.edit = true;
   }
 
   editClient(client: Client) {
@@ -130,21 +193,52 @@ export class ClientsComponent implements OnInit {
   }
 
   updateClient(form: NgForm) {
-    if (form.invalid) {
-      return;
+    if (form.invalid) { return; }
+    if (this.imageLoad) {
+      // Generate a random ID
+      const randomId = Math.random().toString(36).substring(2);
+      console.log(randomId);
+      const filepath = `images/${randomId}`;
+      const fileRef = this._storage.ref(filepath);
+      // Upload image
+      const task = this._storage.upload(filepath, this.imageLoad);
+      return task.snapshotChanges()
+        .pipe(
+          finalize(
+            () => {
+              fileRef.getDownloadURL().subscribe(url => {
+                this.edit = false;
+                form.value.image = url;
+                this.clientService.updateClient(form.value).then(data => {
+                  this.oculto = 'oculto';
+                  this.action = '';
+                  this.swal(
+                    'Registro modificado',
+                    'Cliente modificado de manera exitosa',
+                    'success'
+                  );
+                  form.resetForm();
+                  this.objClient = new Client();
+                });
+              });
+            }
+          )
+        ).subscribe();
+    } else {
+      this.edit = false;
+      form.value.image = '/assets/img/customer_avatar.png';
+      this.clientService.updateClient(form.value).then(data => {
+        this.oculto = 'oculto';
+        this.action = '';
+        this.swal(
+          'Registro modificado',
+          'Cliente modificado de manera exitosa',
+          'success'
+        );
+        form.resetForm();
+        this.objClient = new Client();
+      });
     }
-    form.value.image = '/assets/img/customer_avatar.png';
-    this.clientService.updateClient(form.value).then(data => {
-      this.oculto = 'oculto';
-      this.action = '';
-      this.swal(
-        'Registro modificado',
-        'Cliente modificado de manera exitosa',
-        'success'
-      );
-      form.resetForm();
-      this.objClient = new Client();
-    });
   }
 
   closeModal() {
@@ -163,6 +257,7 @@ export class ClientsComponent implements OnInit {
         this.objClient.should = false;
         this.oculto = 'oculto';
         this.action = '';
+        this.edit = false;
       }
     });
   }

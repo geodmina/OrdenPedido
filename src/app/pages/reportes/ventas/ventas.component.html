@@ -1,0 +1,91 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-align-justify"></i> Reporte de Ventas
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" *ngIf="loading">
+            <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
+          </div>
+          <div class="alert alert-danger" *ngIf="!loading && reporte.length === 0">
+            <i class="fa fa-info-circle "></i><strong>No hay datos</strong>
+          </div>
+
+          <div class="row">
+
+            <div class="col-sm-6">
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="row">
+                    <div class="col-md-2">
+                      Inicio:
+                    </div>
+                    <div class="col-md-4">
+                      <input type="date" [(ngModel)]="inicio" name="inicio" class="form-control">
+                    </div>
+                    <div class="col-md-1">
+                      Fin
+                    </div>
+                    <div class="col-md-4">
+                      <input type="date" [(ngModel)]="fin" name="fin" class="form-control">
+                    </div>
+                    <div class="col-md-1">
+                      <button (click)="consultar()" class="pull-right btn btn-outline-success"><i
+                          class="fa fa-search "></i></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="table table-responsive-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>Vendedor</th>
+                        <th>Monto Vendido</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of reporte; let i = index">
+                        <td> {{ item.vendedor }} <i class="fa fa-star" style="color: gold" *ngIf="i === 0"></i> </td>
+                        <td class="center">{{ item.total | currency }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm-6">
+
+              <div class="card">
+                <div class="card-header">
+                  <i class="fa fa-pie-chart"></i> Gráfico de Ventas
+                  <div class="card-header-actions">
+                    <select [(ngModel)]="pieChartType" name="pieChartType" class="form-control form-control-sm"
+                      (change)="charType($event.target.value)">
+                      <option value="pie">Pastel</option>
+                      <option value="bar">Barras</option>
+                      <option value="line">Lineas</option>
+                      <option value="doughnut">Dona</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body" *ngIf="!loading">
+                  <div class="chart-wrapper">
+                    <canvas baseChart class="chart" [data]="pieChartData" [labels]="pieChartLabels"
+                      [legend]="ChartLegend" [chartType]="pieChartType"></canvas>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

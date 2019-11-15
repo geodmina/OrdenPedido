@@ -10,5 +10,9 @@ export class Client {
     phone?: string;
     seller?: string;
     should?: boolean;
+    status?: boolean;
+    cm?: number;
+    cu?: number;
+    email?: string;
 
 }

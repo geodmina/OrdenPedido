@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import {
   ClientService,
   UserService,
-  ProductService
+  ProductService,
+  OrdenService
  } from './service.index';
 
 @NgModule({
@@ -14,7 +15,8 @@ import {
   providers: [
     ClientService,
     UserService,
-    ProductService
+    ProductService,
+    OrdenService
   ],
   declarations: []
 })

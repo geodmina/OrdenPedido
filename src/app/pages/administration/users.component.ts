@@ -12,7 +12,10 @@ import { AuthService } from '../../services/service/auth.service';
 })
 export class UsersComponent implements OnInit {
 
+  edit = false;
+
   usernames: Username[] = [];
+  usernamesF: Username[] = [];
   loading = true;
 
   oculto = 'oculto';
@@ -21,6 +24,7 @@ export class UsersComponent implements OnInit {
   action = '';
   titleModal = '';
   titleCancel = '';
+  fechaBaja = '';
 
   constructor(
     private userService: UserService,
@@ -31,21 +35,43 @@ export class UsersComponent implements OnInit {
     this.getUsers();
   }
 
+  onSearchChange(searchValue: string): void {
+    if ( searchValue.length > 3 ) {
+      this.usernames = this.usernamesF.filter(function(item) {
+        return item.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1 ;
+      });
+    } else {
+      this.usernames = this.usernamesF;
+    }
+  }
+
+  editForm() {
+    this.edit = true;
+  }
+
   getUsers() {
     this.userService.getUsers().subscribe(users => {
-      this.usernames = users.map(e => {
+      this.usernamesF = users.map(e => {
         return {
           uid: e.payload.doc.id,
           ...e.payload.doc.data()
         } as Username;
       });
       this.loading = false;
+      this.usernames = this.usernamesF;
     });
+  }
+
+  cambioFecha(e: any){
+    const timeDiff = Math.abs(Date.now() - new Date(e).getTime());
+    this.objUsername.edad = Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
   }
 
   newUsername() {
     this.oculto = '';
     this.objUsername = new Username();
+    this.objUsername.fechaBaja = '';
+    this.objUsername.status = 'ACTIVO';
     this.action = 'new';
     this.titleModal = 'Registro de usuarios';
     this.titleCancel = '¿Desea descartar el ingreso del nuevo usuario?';
@@ -54,6 +80,10 @@ export class UsersComponent implements OnInit {
   editUsername(username: Username) {
     this.oculto = '';
     this.objUsername = username;
+    this.objUsername.fechaBaja = '';
+    if (!this.objUsername.status){
+      this.objUsername.status = 'ACTIVO';
+    }
     this.action = 'edit';
     this.titleModal = 'Modificación de usuario';
     this.titleCancel = '¿Desea descartar la modificación del usuario?';
@@ -108,6 +138,7 @@ export class UsersComponent implements OnInit {
       return;
     }
     this.userService.updateUser(form.value).then(data => {
+      this.edit = false;
       this.oculto = 'oculto';
       this.action = '';
       this.swal(
@@ -133,6 +164,7 @@ export class UsersComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.objUsername = new Username();
+        this.edit = false;
         this.oculto = 'oculto';
         this.action = '';
       }

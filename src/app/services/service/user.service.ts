@@ -14,6 +14,10 @@ export class UserService {
         return this.afs.collection('users', ref => ref.orderBy('name', 'asc')).snapshotChanges();
     }
 
+    getSellers() {
+        return this.afs.collection('users', ref => ref.where('role', '==', 'VENDEDOR').orderBy('name', 'asc')).snapshotChanges();
+    }
+
     getUser(uid: any) {
         return this.afs.collection('users').doc(uid).snapshotChanges();
     }
@@ -22,7 +26,6 @@ export class UserService {
         const uid = user.uid;
         delete user.uid;
         delete user.password;
-        console.log(user);
         return this.afs.collection('users').doc(uid).set(user);
     }
 

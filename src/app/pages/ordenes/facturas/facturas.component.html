@@ -1,0 +1,185 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-md-2">
+              Inicio:
+            </div>
+            <div class="col-md-4">
+              <input type="date" [(ngModel)]="inicio" name="inicio" class="form-control">
+            </div>
+            <div class="col-md-1">
+              Fin
+            </div>
+            <div class="col-md-4">
+              <input type="date" [(ngModel)]="fin" name="fin" class="form-control">
+            </div>
+            <div class="col-md-1">
+              <button (click)="consultar()" class="pull-right btn btn-outline-success"><i
+                  class="fa fa-search "></i></button>
+            </div>
+          </div>
+          <!-- (<small>{{ usernames.length }}</small> ) -->
+          <!--<div class="card-header-actions">
+              <button (click)="newUsername()" class="btn btn-ghost-success" type="button"><i class="fa fa-plus"></i> Nuevo</button>
+          </div>-->
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" *ngIf="loading">
+            <i class="fa fa-repeat fa-spin "></i><strong> Cargando...</strong>
+          </div>
+          <div class="alert alert-danger" *ngIf="!loading && facturas.length === 0">
+            <i class="fa fa-info-circle "></i><strong>No hay datos</strong>
+          </div>
+          <table class="table table-striped" *ngIf="!loading && facturas.length > 0">
+            <thead>
+              <tr>
+                <th># Factura</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let factura of facturas">
+                <td> <small> {{ factura.factura }} </small> </td>
+                <td> <small> {{ factura.cliente }} - {{ factura.clienteNombre }} </small> </td>
+                <td> <small> {{ factura.vendedorNombre }} </small> </td>
+                <td> <small> {{ factura.total | currency }} </small> </td>
+                <td> <small> {{ factura.fechaFactura.toDate()| date: 'dd/MM/yyyy h:mm:ss' }} </small> </td>
+                <td class="text-nowrap">
+                  <div class="tools modify-tools pointer">
+                    <button (click)="mostrar(factura)" class="btn btn-square btn-success" type="button"><i
+                        class="fa fa-file"></i></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- {{ ordenes | json }} -->
+          <!-- <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="dark-background animated fadeInDown" [ngClass]="oculto" *ngIf="factura">
+  <div aria-hidden="false" aria-labelledby="myModalLabel" bsmodal="" class="modal fade in show" role="dialog"
+    aria-modal="true" style="display: block;">
+    <div class="modal-dialog modal-lg modal-success" role="document">
+      <div class="modal-content">
+        <div class="card">
+          <div class="card-header">Factura
+            <a class="btn btn-sm btn-success float-right mr-1 d-print-none" onclick="javascript:window.print();">
+              <i class="fa fa-print"></i> Imprimir</a>
+            <a (click)="oculto = 'oculto'" class="btn btn-sm btn-danger float-right mr-1 d-print-none">
+              <i class="fa fa-window-close-o"></i> Cerrar</a>
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+
+              <div class="col-sm-4">
+                <h6 class="mb-3">Detalles:</h6>
+                <div>Importadora Ming Cheng</div>
+                <div>Factura
+                  <strong>#{{ factura.factura }}</strong>
+                </div>
+                <div>{{ factura.fechaFactura.toDate()| date: 'dd/MM/yyyy h:mm:ss' }}</div>
+                <div>
+                  Lotizacion Ind. Inmaconsa S L 7 Mz 21
+                </div>
+              </div>
+
+              <div class="col-sm-4">
+                <h6 class="mb-3">Cliente:</h6>
+                <div>
+                  <strong>{{ factura.clienteNombre }}</strong>
+                </div>
+                <div>{{ factura.clienteDireccion }}</div>
+                <div>Email: {{ factura.clienteEmail }}</div>
+                <div>Teléfono: {{ factura.clienteNumero }}</div>
+              </div>
+
+              <div class="col-sm-4">
+                <h6 class="mb-3">Vendedor:</h6>
+                <div>
+                  <strong>{{ factura.vendedorNombre }}</strong>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="table-responsive-sm">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th class="center">#</th>
+                    <th>Producto</th>
+                    <th class="center">Cant.</th>
+                    <th class="right">Val. Uni.</th>
+                    <th class="right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let detalle of factura.detalles; let i = index">
+                    <td class="center">{{ i + 1 }}</td>
+                    <td class="left">{{ detalle.productoNombre }}</td>
+                    <td class="left">{{ detalle.cantidad }}</td>
+                    <td class="center">{{ (detalle.valuni * 100) / 112 | currency }}</td>
+                    <td class="right">{{ ((detalle.valuni * 100) / 112) * detalle.cantidad | currency }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="row">
+              <div class="col-lg-4 col-sm-6">
+                <table class="table table-clear">
+                  <tbody>
+                    <tr>
+                      <td class="left">
+                        <strong>Subtotal</strong>
+                      </td>
+                      <td class="right">{{ (factura.total * 100) / 112 | currency }}</td>
+                    </tr>
+                    <tr>
+                      <td class="left">
+                        <strong>IVA (12%)</strong>
+                      </td>
+                      <td class="right">{{ (factura.total * 12) / 112 | currency }}</td>
+                    </tr>
+                    <tr>
+                      <td class="left">
+                        <strong>Total</strong>
+                      </td>
+                      <td class="right">
+                        <strong>{{ factura.total | currency }}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!--<a class="btn btn-success" href="#">
+                <i class="fa fa-usd"></i> Proceed to Payment</a>-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
